@@ -124,8 +124,5 @@ public class DemoMatrix {
         System.out.println("Invertable matrix 3x3 after deserialization: ");
         writeMatrix(newMatrix);
         System.out.println();
-
-
     }
-
 }

@@ -62,8 +62,6 @@ public class MatrixTest {
         assertEquals(m.equals(m1),false);
     }
 
-
-
     @Test(expected = MatrixOutOfBoundException.class)
     public void testOutOfBoundsException() throws MatrixException {
         Matrix m = new Matrix(4);

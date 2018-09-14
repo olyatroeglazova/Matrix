@@ -9,8 +9,6 @@ public class InvertableMatrixTest {
     @Test
     public void calculateInvertableMatrix() throws Exception {
 
-
-
         InvertableMatrix m = new InvertableMatrix(3);
 
         m.setElem(0, 0, 2.);
@@ -38,7 +36,5 @@ public class InvertableMatrixTest {
             }
         }
     }
-
-
 
 }
