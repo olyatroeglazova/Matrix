@@ -1,3 +1,4 @@
+import exceptions.ZeroDeterminantException;
 import matrix.InvertableMatrix;
 import matrix.Matrix;
 import exceptions.MatrixOutOfBoundException;
@@ -30,11 +31,16 @@ public class InvertableMatrixTest {
 
         InvertableMatrix mult = m.mult(inv);
 
-        for(int i = 0; i<m.length(); i++){
-            for(int j = 0; j<m.length(); j++){
-                assertEquals(mult.getElem(i,j), e.getElem(i,j), 1E-9);
-            }
-        }
+        assertTrue(mult.equals(e));
     }
 
+    @Test(expected = ZeroDeterminantException.class)
+    public void testZeroDeterminantException() throws ZeroDeterminantException, MatrixOutOfBoundException {
+        Matrix m = new Matrix(2);
+        m.setElem(0,0,1.);
+        m.setElem(1,1,1.);
+        InvertableMatrix mInv = new InvertableMatrix(m);
+        mInv.setElem(1,1,0.);
+        mInv.calculateInvertableMatrix();
+    }
 }

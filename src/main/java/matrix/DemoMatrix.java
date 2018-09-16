@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class DemoMatrix {
 
-    private static final String FILE_SER = "serialize.dat";
+    private static final String FILE_SER = "serialize";
 
     public  void writeToStream(OutputStream fout, Matrix m) throws IOException, MatrixException {
 
@@ -58,8 +58,8 @@ public class DemoMatrix {
         InvertableMatrix matrix2x2 = new InvertableMatrix(2);
 
         // заполняем матрицу из файла
-        try (InputStream inputStream = DemoMatrix.class.getResourceAsStream("/matrix2x2.txt")) {
-            work.readFromStream(inputStream, matrix2x2);
+        try (FileInputStream fin = new FileInputStream("src/main/resources/matrix2x2.txt")) {
+            work.readFromStream(fin, matrix2x2);
         }  catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {
@@ -77,8 +77,8 @@ public class DemoMatrix {
         InvertableMatrix matrix3x3 = new InvertableMatrix(3);
 
         // заполняем матрицу из файла
-        try (InputStream inputStream = DemoMatrix.class.getResourceAsStream("/matrix3x3.txt")) {
-            work.readFromStream(inputStream, matrix3x3);
+        try (FileInputStream fin = new FileInputStream("src/main/resources/matrix3x3.txt")) {
+            work.readFromStream(fin, matrix3x3);
         }  catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {

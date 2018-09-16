@@ -107,7 +107,13 @@ public class Matrix implements IMatrix {
         if (N != matrix1.N) return false;
         if (Double.compare(matrix1.determinant, determinant) != 0) return false;
         if (flagForDeterminant != matrix1.flagForDeterminant) return false;
-        return Arrays.equals(matrix, matrix1.matrix);
+
+        for (int i = 0; i<N*N; i++){
+            if(this.matrix[i]-matrix1.matrix[i]>1E-9){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
