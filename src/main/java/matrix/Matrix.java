@@ -3,10 +3,11 @@ package matrix;
 import exceptions.MatrixOutOfBoundException;
 import interfaces.IMatrix;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class Matrix implements IMatrix {
+public class Matrix implements IMatrix, Serializable {
 
     private final int N;
     protected double[] matrix;

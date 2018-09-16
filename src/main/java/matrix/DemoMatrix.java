@@ -2,6 +2,7 @@ package matrix;
 
 import exceptions.MatrixException;
 import exceptions.MatrixOutOfBoundException;
+import interfaces.IMatrix;
 
 import java.io.*;
 import java.util.Scanner;
@@ -10,7 +11,7 @@ public class DemoMatrix {
 
     private static final String FILE_SER = "serialize";
 
-    public  void writeToStream(OutputStream fout, Matrix m) throws IOException, MatrixException {
+    private static void writeToStream(OutputStream fout, IMatrix m) throws IOException, MatrixException {
 
         for (int i = 0; i < m.length(); i++) {
             for (int j = 0; j < m.length(); j++) {
@@ -21,7 +22,7 @@ public class DemoMatrix {
         }
     }
 
-    public  void readFromStream(InputStream fin, Matrix m) throws MatrixOutOfBoundException {
+    private static void readFromStream(InputStream fin, IMatrix m) throws MatrixOutOfBoundException {
         Scanner scanner = new Scanner(fin);
         for (int i = 0; i < m.length(); i++) {
             for (int j = 0; j < m.length(); j++) {
@@ -34,7 +35,7 @@ public class DemoMatrix {
         }
     }
 
-    public  double sumAll(Matrix m) throws MatrixOutOfBoundException {
+    public static double sumAll(IMatrix m) throws MatrixOutOfBoundException {
         double result = 0;
         for (int i = 0; i < m.length(); i++)
             for (int j = 0; j < m.length(); j++)
@@ -42,7 +43,7 @@ public class DemoMatrix {
         return result;
     }
 
-    public static void writeMatrix(Matrix m) throws MatrixOutOfBoundException{
+    public static void writeMatrix(IMatrix m) throws MatrixOutOfBoundException{
         for (int i = 0; i < m.length(); i++) {
             for (int j = 0; j < m.length(); j++) {
                 System.out.print(m.getElem(i, j) + " ");
@@ -53,13 +54,11 @@ public class DemoMatrix {
 
     public static void main(String[] args)throws MatrixException, ClassNotFoundException {
 
-        DemoMatrix work = new DemoMatrix();
-
         InvertableMatrix matrix2x2 = new InvertableMatrix(2);
 
         // заполняем матрицу из файла
         try (FileInputStream fin = new FileInputStream("src/main/resources/matrix2x2.txt")) {
-            work.readFromStream(fin, matrix2x2);
+            readFromStream(fin, matrix2x2);
         }  catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {
@@ -70,7 +69,7 @@ public class DemoMatrix {
         writeMatrix(matrix2x2);
         System.out.println();
 
-        System.out.println("Sum of elems: " + work.sumAll(matrix2x2));
+        System.out.println("Sum of elems: " + sumAll(matrix2x2));
         System.out.println("Determinant: " + matrix2x2.determinant());
         System.out.println();
 
@@ -78,7 +77,7 @@ public class DemoMatrix {
 
         // заполняем матрицу из файла
         try (FileInputStream fin = new FileInputStream("src/main/resources/matrix3x3.txt")) {
-            work.readFromStream(fin, matrix3x3);
+            readFromStream(fin, matrix3x3);
         }  catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {
@@ -89,7 +88,7 @@ public class DemoMatrix {
         writeMatrix(matrix3x3);
         System.out.println();
 
-        System.out.println("Sum of elems: " + work.sumAll(matrix3x3));
+        System.out.println("Sum of elems: " + sumAll(matrix3x3));
         System.out.println("Determinant: " + matrix3x3.determinant());
         System.out.println();
 
@@ -102,7 +101,7 @@ public class DemoMatrix {
 
         // матрица сериализуется в файл
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(FILE_SER))) {
-            work.writeToStream(outputStream, matrix3x3Inv);
+            writeToStream(outputStream, matrix3x3Inv);
         }
         catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
@@ -114,7 +113,7 @@ public class DemoMatrix {
         // матрица десериализуется из файла
         Matrix newMatrix = new Matrix(3);
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(FILE_SER))) {
-            work.readFromStream(inputStream, newMatrix);
+            readFromStream(inputStream, newMatrix);
         } catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {

@@ -4,7 +4,9 @@ import exceptions.MatrixOutOfBoundException;
 import exceptions.ZeroDeterminantException;
 import interfaces.IInvertableMatrix;
 
-public class InvertableMatrix extends Matrix implements IInvertableMatrix {
+import java.io.Serializable;
+
+public class InvertableMatrix extends Matrix implements IInvertableMatrix, Serializable {
 
     public InvertableMatrix(final int size) {
         super(size);
