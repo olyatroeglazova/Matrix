@@ -2,6 +2,7 @@ package matrix;
 
 import exceptions.MatrixException;
 import exceptions.MatrixOutOfBoundException;
+import exceptions.ZeroDeterminantException;
 import interfaces.IMatrix;
 
 import java.io.*;
@@ -12,7 +13,8 @@ public class DemoMatrix {
     private static final String FILE_SER = "serialize";
 
     private static void writeToStream(OutputStream fout, IMatrix m) throws IOException, MatrixException {
-
+        fout.write(Integer.toString(m.length()).getBytes());
+        fout.write('\n');
         for (int i = 0; i < m.length(); i++) {
             for (int j = 0; j < m.length(); j++) {
                 fout.write(Double.toString(m.getElem(i, j)).replace('.', ',').getBytes());
@@ -22,8 +24,10 @@ public class DemoMatrix {
         }
     }
 
-    private static void readFromStream(InputStream fin, IMatrix m) throws MatrixOutOfBoundException {
+    private static InvertableMatrix readFromStream(InputStream fin) throws MatrixOutOfBoundException {
         Scanner scanner = new Scanner(fin);
+        int length = scanner.nextInt();
+        InvertableMatrix m = new InvertableMatrix(length);
         for (int i = 0; i < m.length(); i++) {
             for (int j = 0; j < m.length(); j++) {
                 if (!scanner.hasNext()) {
@@ -33,6 +37,7 @@ public class DemoMatrix {
                 m.setElem(i, j, value);
             }
         }
+        return m;
     }
 
     public static double sumAll(IMatrix m) throws MatrixOutOfBoundException {
@@ -54,15 +59,17 @@ public class DemoMatrix {
 
     public static void main(String[] args)throws MatrixException, ClassNotFoundException {
 
-        InvertableMatrix matrix2x2 = new InvertableMatrix(2);
+        Matrix matrix2x2 = null;
 
         // заполняем матрицу из файла
         try (FileInputStream fin = new FileInputStream("src/main/resources/matrix2x2.txt")) {
-            readFromStream(fin, matrix2x2);
+             matrix2x2 = (Matrix) readFromStream(fin);
         }  catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {
             System.err.println("Something is wrong with reading from file.");
+        } catch (MatrixOutOfBoundException e){
+            System.err.println("Out of bound.");
         }
 
         System.out.println("Matrix 2x2: ");
@@ -73,15 +80,18 @@ public class DemoMatrix {
         System.out.println("Determinant: " + matrix2x2.determinant());
         System.out.println();
 
-        InvertableMatrix matrix3x3 = new InvertableMatrix(3);
+        InvertableMatrix matrix3x3 = null;
 
         // заполняем матрицу из файла
         try (FileInputStream fin = new FileInputStream("src/main/resources/matrix3x3.txt")) {
-            readFromStream(fin, matrix3x3);
+           matrix3x3 = readFromStream(fin);
         }  catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {
             System.err.println("Something is wrong with reading from file.");
+        }
+        catch (MatrixOutOfBoundException e){
+            System.err.println("Out of bound.");
         }
 
         System.out.println("Matrix 3x3: ");
@@ -92,35 +102,38 @@ public class DemoMatrix {
         System.out.println("Determinant: " + matrix3x3.determinant());
         System.out.println();
 
-        InvertableMatrix matrix3x3Inv = matrix3x3.calculateInvertableMatrix();
-
-        System.out.println("Invertable matrix 3x3: ");
-        writeMatrix(matrix3x3Inv);
-        System.out.println();
+        try {
+            InvertableMatrix matrix3x3Inv = matrix3x3.calculateInvertableMatrix();
+            System.out.println("Invertable matrix 3x3: ");
+            writeMatrix(matrix3x3Inv);
+            System.out.println();
+        } catch (ZeroDeterminantException e){
+            System.err.println("Determinant is zero.");
+        } catch (MatrixOutOfBoundException e){
+            System.err.println("Out of bound.");
+        }
 
 
         // матрица сериализуется в файл
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(FILE_SER))) {
-            writeToStream(outputStream, matrix3x3Inv);
-        }
-        catch (FileNotFoundException e) {
+            outputStream.writeObject(matrix3x3);
+        } catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Something is wrong with writing to file.");
         }
 
         // матрица десериализуется из файла
-        Matrix newMatrix = new Matrix(3);
+        Matrix newMatrix = null;
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(FILE_SER))) {
-            readFromStream(inputStream, newMatrix);
+            newMatrix = (Matrix) inputStream.readObject();
         } catch (FileNotFoundException e) {
             System.err.println("This file doesn't exist.");
         } catch (IOException e) {
             System.err.println("Something is wrong with reading from file.");
         }
 
-        System.out.println("Invertable matrix 3x3 after deserialization: ");
+        System.out.println("Matrix 3x3 after deserialization: ");
         writeMatrix(newMatrix);
         System.out.println();
     }

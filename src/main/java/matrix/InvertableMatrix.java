@@ -26,6 +26,11 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
         InvertableMatrix temp = new InvertableMatrix(this);
 
         for (int i = 0; i < newMatrix.length(); i++) {
+            for (int j = 0; j<newMatrix.length(); j++){
+                newMatrix.setElem(i,j,0.);
+            }
+        }
+        for (int i = 0; i<newMatrix.length(); i++){
             newMatrix.setElem(i, i, 1.);
         }
 
@@ -33,7 +38,7 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
 
             //если элемент на главной диагонали равен 0, то ищем строку с ненулевым элементом
             //в данном столбце и прибавляем строку
-            if (temp.getElem(i, i) == 0) {
+            if (Math.abs(temp.getElem(i, i)) < 1E-10) {
                 notNull = temp.firstNotNullBelowZeroElem(i);
                 if (notNull == -1) {
                     throw new ZeroDeterminantException("Matrix can't be inverted");
@@ -47,7 +52,6 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
 
             //приводим к верхнетреугольному виду
             for (int nextStr = i + 1; nextStr < temp.length(); nextStr++) {
-                if (temp.getElem(i, i) != 0) {
                     multiplier = temp.getElem(nextStr, i) / temp.getElem(i, i);
                     temp.setElem(nextStr, i, 0.); //зануляем j-й элемент i-й строки
                     for (int k = i + 1; k < temp.length(); k++) { //считаем остальные элементы строки
@@ -57,12 +61,11 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
                         newMatrix.setElem(nextStr, k, newMatrix.getElem(nextStr, k) - newMatrix.getElem(i, k) * multiplier);
                     }
                 }
-            }
         }
 
         //зануляем элементы выше гланой диагонали
         for (int i = temp.length() - 1; i >= 0; i--) {
-            if (temp.getElem(i, i) == 0) {
+            if (Math.abs(temp.getElem(i, i)) < 1E-10) {
                 notNull = temp.firstNotNullAboveZeroElem(i);
                 if (notNull == -1) {
                     throw new ZeroDeterminantException("Matrix can not be inverted");
@@ -75,7 +78,6 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
             }
 
             for (int prevStr = i - 1; prevStr >= 0; prevStr--) {
-                if (temp.getElem(i, i) != 0) {
                     multiplier = temp.getElem(prevStr,i) / temp.getElem(i, i);
                     temp.setElem(prevStr,i, 0.);
                     for (int k = i - 1; k >= 0; k--) {
@@ -85,7 +87,6 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
                     for (int k = temp.length() - 1; k >= 0; k--) {
                         newMatrix.setElem(prevStr, k, newMatrix.getElem(prevStr, k) - newMatrix.getElem(i, k) * multiplier);
                     }
-                }
             }
         }
 
@@ -102,7 +103,7 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
     }
     private int firstNotNullBelowZeroElem(int j) throws MatrixOutOfBoundException {
         for (int i = j; i < this.length(); i++) {
-            if (this.getElem(i, j) != 0) {
+            if (Math.abs(this.getElem(i, i)) > 1E-10) {
                 return i;
             }
         }
@@ -111,7 +112,7 @@ public class InvertableMatrix extends Matrix implements IInvertableMatrix, Seria
 
     private int firstNotNullAboveZeroElem(int j) throws MatrixOutOfBoundException {
         for (int i = j-1; i >= 0; i--) {
-            if (this.getElem(i, j) != 0) {
+            if (Math.abs(this.getElem(i, i)) > 1E-10) {
                 return i;
             }
         }

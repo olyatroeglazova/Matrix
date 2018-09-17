@@ -53,7 +53,7 @@ public class Matrix implements IMatrix, Serializable {
 
     protected int firstNotNull(final int j) throws MatrixOutOfBoundException {
         for (int i = j; i < this.length(); i++) {
-            if (this.getElem(i, j) != 0) {
+            if (Math.abs(this.getElem(i, j)) >1E-10) {
                 return i;
             }
         }
@@ -71,7 +71,7 @@ public class Matrix implements IMatrix, Serializable {
         int notNull;
 
         for (int i = 0; i < tmp.length(); i++) {
-            if (tmp.getElem(i, i) == 0) {
+            if (Math.abs(tmp.getElem(i, i)) < 1E-10) {
                 notNull = tmp.firstNotNull(i);
                 if (notNull == -1) {
                     return 0;
@@ -82,21 +82,19 @@ public class Matrix implements IMatrix, Serializable {
                 }
             }
             for (int nextStr = i + 1; nextStr < tmp.length(); nextStr++) {
-                if (tmp.getElem(i, i) != 0) {
                     multiplier = tmp.getElem(nextStr, i) / tmp.getElem(i, i);
                     tmp.setElem(nextStr, i, 0.);
                     for (int k = i + 1; k < tmp.length(); k++) {
                         tmp.setElem(nextStr, k, tmp.getElem(nextStr, k) - tmp.getElem(i, k) * multiplier);
                     }
-                }
             }
         }
-            for (int i = 0; i < this.length(); i++) {
-                determinant *= tmp.getElem(i, i);
-            }
-            flagForDeterminant = true;
-            return determinant;
+        for (int i = 0; i < this.length(); i++) {
+            determinant *= tmp.getElem(i, i);
         }
+        flagForDeterminant = true;
+        return determinant;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -106,11 +104,11 @@ public class Matrix implements IMatrix, Serializable {
         Matrix matrix1 = (Matrix) o;
 
         if (N != matrix1.N) return false;
-        if (Double.compare(matrix1.determinant, determinant) != 0) return false;
+        if (Double.compare(matrix1.determinant, determinant) > 1E-10) return false;
         if (flagForDeterminant != matrix1.flagForDeterminant) return false;
 
         for (int i = 0; i<N*N; i++){
-            if(this.matrix[i]-matrix1.matrix[i]>1E-9){
+            if(Math.abs(this.matrix[i]-matrix1.matrix[i])>1E-9){
                 return false;
             }
         }
